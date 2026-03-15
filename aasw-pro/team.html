@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Meet the dedicated team behind AASW Foundation working to uplift communities across India.">
+  <meta name="theme-color" content="#a9091b">
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <title>Our Team | AASW Foundation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ══ TOP BRAND BAR ══ -->
+<div class="top-brand-bar">
+  <div class="container top-brand-inner">
+    <a href="index.html" class="brand-logo">
+      <div class="brand-logo-icon">AA</div>
+      <div class="brand-logo-text">
+        <strong>AASW Foundation</strong>
+        <span>Empowering Lives · Building Futures</span>
+      </div>
+    </a>
+    <div class="top-right-actions">
+      <div class="lang-bar">
+        <button class="lang-btn active" data-lang="en" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="hi" onclick="setLang('hi')">हि</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAIN NAVIGATION BAR ══ -->
+<nav class="main-nav" id="mainNav">
+  <div class="container nav-inner">
+    <ul class="nav-menu" id="navMenu">
+      <li><a href="index.html" class="nav-link" data-t="nav-home">Home</a></li>
+      <li class="has-dropdown">
+        <a href="#" class="nav-link active" data-t="nav-who">Who We Are <i class="fas fa-chevron-down"></i></a>
+        <div class="dropdown-menu">
+          <a href="index.html#about" data-t="dd-about">About Us</a>
+          <a href="governance.html" data-t="dd-gov">Governance</a>
+          <a href="team.html" data-t="dd-team">Our Team</a>
+        </div>
+      </li>
+      <li class="has-dropdown">
+        <a href="#" class="nav-link" data-t="nav-programs">Programs <i class="fas fa-chevron-down"></i></a>
+        <div class="dropdown-menu">
+          <a href="index.html#programs" data-t="dd-edu">Shiksha Setu — Education</a>
+          <a href="index.html#programs" data-t="dd-health">Arogya Gram — Health</a>
+          <a href="index.html#programs" data-t="dd-women">Shakti — Women's Welfare</a>
+          <a href="index.html#programs" data-t="dd-udyam">Udyam — Livelihoods</a>
+        </div>
+      </li>
+      <li><a href="index.html#testimonials" class="nav-link" data-t="nav-impact">Impact Stories</a></li>
+      <li><a href="index.html#footer" class="nav-link" data-t="nav-contact">Contact Us</a></li>
+      <li><a href="dashboard.html" class="nav-link" data-t="nav-dashboard">Dashboard</a></li>
+    </ul>
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ MOBILE NAV ══ -->
+<div class="mobile-overlay" id="mobileOverlay">
+  <div class="mobile-panel">
+    <div class="mobile-head">
+      <div class="mobile-brand">
+        <div class="brand-logo-icon" style="width:36px;height:36px;font-size:0.9rem">AA</div>
+        <strong>AASW Foundation</strong>
+      </div>
+      <button class="mobile-close" onclick="closeMobileNav()">✕</button>
+    </div>
+    <a class="mobile-link" href="index.html">Home</a>
+    <a class="mobile-link" href="index.html#about">About Us</a>
+    <a class="mobile-link" href="governance.html">Governance</a>
+    <a class="mobile-link" href="team.html">Our Team</a>
+    <a class="mobile-link" href="index.html#programs">Programs</a>
+    <a class="mobile-link" href="index.html#footer">Contact Us</a>
+  </div>
+</div>
+
+<!-- ══ PAGE HEADER BANNER ══ -->
+<section class="page-header-banner">
+  <div class="page-header-overlay"></div>
+  <div class="container page-header-content">
+    <h1 data-t="team-banner-h">Our Team</h1>
+    <p data-t="team-banner-p">The passionate people driving change across India</p>
+  </div>
+</section>
+
+<!-- ══ TEAM CONTENT ══ -->
+<section class="section" style="background:#fff">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-tag" data-t="team-tag">Leadership</span>
+      <h2 class="section-title" data-t="team-h2">Meet Our Dedicated Team</h2>
+      <p class="section-sub" data-t="team-sub">The passionate individuals working tirelessly to uplift communities and drive positive change across India.</p>
+    </div>
+
+    <div class="team-grid" style="max-width:400px;margin:20px auto 0;">
+      <!-- Founder -->
+      <div class="team-card">
+        <div class="team-avatar">
+          <i class="fas fa-user"></i>
+        </div>
+        <h3 data-t="tm1-name">SATYA PRAKASH TRIVEDI</h3>
+        <span class="team-role" data-t="tm1-role">Founder & President</span>
+        <p data-t="tm1-desc">Visionary leader with 20+ years in community development and social welfare across rural India.</p>
+        <div class="team-social">
+          <a href="#"><i class="fab fa-linkedin-in"></i></a>
+          <a href="#"><i class="fas fa-envelope"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer id="footer">
+  <div class="footer-top">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <div class="brand-logo-icon">AA</div>
+          <div>
+            <strong>AASW Foundation</strong>
+            <span>Empowering Lives · Building Futures</span>
+          </div>
+        </div>
+        <p>We believe that community, compassion, and consistent action can make a significant positive impact on India's social and economic well-being.</p>
+        <div class="footer-socials">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-linkedin-in"></i></a>
+          <a href="#"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+      <div>
+        <p class="footer-h">Quick Links</p>
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="index.html#about">About Us</a></li>
+          <li><a href="index.html#programs">Our Programs</a></li>
+          <li><a href="team.html">Our Team</a></li>
+          <li><a href="index.html#footer">Contact Us</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer-h">Useful Links</p>
+        <ul class="footer-links">
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="#">Media & Press</a></li>
+          <li><a href="#">Volunteer With Us</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer-h">Connect With Us</p>
+        <div class="footer-contact">
+          <div class="fc-row"><i class="fas fa-envelope"></i><span>aaswfoundation06@gmail.com</span></div>
+          <div class="fc-row"><i class="fas fa-phone"></i><span>+91 9984156418</span></div>
+          <div class="fc-row"><i class="fas fa-phone"></i><span>+91 7007276725</span></div>
+          <div class="fc-row"><i class="fas fa-map-marker-alt"></i><span>Ward No 2 Ambedkar Nagar Rura Kanpur Dehat Uttar Pradesh</span></div>
+          <div class="fc-row"><i class="fas fa-clock"></i><span>Mon – Sat: 9:30 AM – 6:00 PM</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="container">
+      <p>© 2025 AASW Foundation. All rights reserved. | Registered Non-Profit · 80G & 12A Certified</p>
+    </div>
+  </div>
+</footer>
+
+<button id="btt" title="Back to top"><i class="fas fa-arrow-up"></i></button>
+<script src="js/main.js"></script>
+</body>
+</html>

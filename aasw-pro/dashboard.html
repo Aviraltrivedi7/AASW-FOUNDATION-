@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AASW Foundation</title>
+    <!-- Explicit permissive CSP to override any implicit local restrictions -->
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: gap: content: https://ssl.gstatic.com; media-src *; img-src * 'self' data: content: https: http:;">
+    <!-- Modern Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="js/lucide.min.js"></script>
+    
+    <!-- Chart.js -->
+    <script src="js/chart.min.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-mark">AA</div>
+                <div class="logo-text">Dashboard</div>
+                <button class="mobile-toggle" id="mobileToggle">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            
+            <ul class="nav-links">
+                <li class="nav-item active">
+                    <a href="#" class="nav-link">
+                        <i data-lucide="layout-dashboard"></i>
+                        <span>Overview</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i data-lucide="users"></i>
+                        <span>Users & Donors</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i data-lucide="activity"></i>
+                        <span>Campaigns</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i data-lucide="credit-card"></i>
+                        <span>Donations</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i data-lucide="settings"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <a href="/" class="nav-link back-to-site">
+                    <i data-lucide="arrow-left"></i>
+                    <span>Back to Website</span>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            
+            <!-- Topbar (Search & Profile) -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-btn" id="menuBtn">
+                        <i data-lucide="menu"></i>
+                    </button>
+                    <div class="search-box">
+                        <i data-lucide="search"></i>
+                        <input type="text" placeholder="Search analytics, users...">
+                    </div>
+                </div>
+                
+                <div class="topbar-right">
+                    <button class="icon-btn notif-btn">
+                        <i data-lucide="bell"></i>
+                        <span class="badgex">3</span>
+                    </button>
+                    <div class="profile">
+                        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%232563eb'/><text x='50' y='50' text-anchor='middle' alignment-baseline='middle' fill='%23ffffff' font-family='sans-serif' font-size='40'>Ad</text></svg>" alt="Admin" class="avatar">
+                        <div class="profile-info">
+                            <span class="name">Admin</span>
+                            <span class="role">Superuser</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="content-wrapper">
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Welcome back, Admin 👋</h1>
+                        <p class="page-subtitle">Here is what's happening at AASW Foundation today.</p>
+                    </div>
+                </div>
+
+                <!-- KPI Cards Section -->
+                <div class="kpi-grid">
+                    <div class="kpi-card glass">
+                        <div class="kpi-icon i-purple">
+                            <i data-lucide="wallet"></i>
+                        </div>
+                        <div class="kpi-details">
+                            <p class="kpi-title">Total Donations</p>
+                            <h3 class="kpi-value">₹ 14,25,000</h3>
+                            <p class="kpi-trend positive"><i data-lucide="trending-up"></i> +12% this month</p>
+                        </div>
+                    </div>
+                    
+                    <div class="kpi-card glass">
+                        <div class="kpi-icon i-blue">
+                            <i data-lucide="users-round"></i>
+                        </div>
+                        <div class="kpi-details">
+                            <p class="kpi-title">Active Beneficiaries</p>
+                            <h3 class="kpi-value">8,401</h3>
+                            <p class="kpi-trend positive"><i data-lucide="trending-up"></i> +5% this week</p>
+                        </div>
+                    </div>
+                    
+                    <div class="kpi-card glass">
+                        <div class="kpi-icon i-gold">
+                            <i data-lucide="heart-handshake"></i>
+                        </div>
+                        <div class="kpi-details">
+                            <p class="kpi-title">Active Campaigns</p>
+                            <h3 class="kpi-value">12</h3>
+                            <p class="kpi-trend neutral"><i data-lucide="minus"></i> Same as last month</p>
+                        </div>
+                    </div>
+                    
+                    <div class="kpi-card glass" id="apiStatusCard">
+                        <div class="kpi-icon i-green" id="apiStatusIcon">
+                            <i data-lucide="server"></i>
+                        </div>
+                        <div class="kpi-details">
+                            <p class="kpi-title">API Server Health</p>
+                            <h3 class="kpi-value" id="apiStatusText">Checking...</h3>
+                            <p class="kpi-trend neutral" id="apiUptimeText">Waiting for ping</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-grid">
+                    <div class="chart-container glass">
+                        <div class="chart-header">
+                            <h3>Donation Overview</h3>
+                            <select class="glass-select">
+                                <option>This Year</option>
+                                <option>Last Year</option>
+                            </select>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="donationChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container glass">
+                        <div class="chart-header">
+                            <h3>Impact by Region</h3>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="regionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Table -->
+                <div class="table-container glass">
+                    <div class="table-header">
+                        <h3>Recent Transactions</h3>
+                        <a href="#" class="view-all">View All</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Donor Name</th>
+                                    <th>Campaign</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="table-user">
+                                            <div class="tu-avatar">RA</div>
+                                            <span>Rahul Sharma</span>
+                                        </div>
+                                    </td>
+                                    <td>Arogya Gram (Health)</td>
+                                    <td>Oct 24, 2025</td>
+                                    <td class="amount">₹ 5,000</td>
+                                    <td><span class="status-badge success">Completed</span></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="table-user">
+                                            <div class="tu-avatar">P</div>
+                                            <span>Priya Desai</span>
+                                        </div>
+                                    </td>
+                                    <td>Shakti (Women Emp.)</td>
+                                    <td>Oct 23, 2025</td>
+                                    <td class="amount">₹ 12,500</td>
+                                    <td><span class="status-badge success">Completed</span></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="table-user">
+                                            <div class="tu-avatar">M</div>
+                                            <span>Manoj Tiwari</span>
+                                        </div>
+                                    </td>
+                                    <td>General Fund</td>
+                                    <td>Oct 22, 2025</td>
+                                    <td class="amount">₹ 2,000</td>
+                                    <td><span class="status-badge pending">Processing</span></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="table-user">
+                                            <div class="tu-avatar">S</div>
+                                            <span>Sunita Verma</span>
+                                        </div>
+                                    </td>
+                                    <td>Child Education</td>
+                                    <td>Oct 20, 2025</td>
+                                    <td class="amount">₹ 10,000</td>
+                                    <td><span class="status-badge success">Completed</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+        <!-- Dashboard Logic -->
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

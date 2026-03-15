@@ -1,0 +1,399 @@
+/* ================================================================
+   AASW FOUNDATION — SODES.IN STYLE JAVASCRIPT
+   Features: Slider · Navbar · Scroll Reveal · Counters ·
+             Language Toggle · Newsletter · Back to Top
+================================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  initSlider();
+  initNavbar();
+  initMobileNav();
+  initScrollReveal();
+  initCounters();
+  initLanguage();
+  initNewsletter();
+  initBackToTop();
+  initSmoothAnchors();
+  initScrollProgress();
+  initDynamicYear();
+});
+
+/* ═══ HERO SLIDER ═══ */
+function initSlider() {
+  const track = document.getElementById('sliderTrack');
+  const slides = track?.querySelectorAll('.slide');
+  const dots = document.querySelectorAll('.slider-dots .dot');
+  const prevBtn = document.getElementById('sliderPrev');
+  const nextBtn = document.getElementById('sliderNext');
+  if (!track || !slides?.length) return;
+
+  let current = 0;
+  const total = slides.length;
+  let autoSlideTimer;
+
+  function goToSlide(index) {
+    current = (index + total) % total;
+    track.style.transform = `translateX(-${current * 100}%)`;
+    dots.forEach((d, i) => d.classList.toggle('active', i === current));
+  }
+
+  function nextSlide() { goToSlide(current + 1); }
+  function prevSlide() { goToSlide(current - 1); }
+
+  function startAutoSlide() {
+    stopAutoSlide();
+    autoSlideTimer = setInterval(nextSlide, 5000);
+  }
+
+  function stopAutoSlide() {
+    clearInterval(autoSlideTimer);
+  }
+
+  prevBtn?.addEventListener('click', () => { prevSlide(); startAutoSlide(); });
+  nextBtn?.addEventListener('click', () => { nextSlide(); startAutoSlide(); });
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', () => { goToSlide(i); startAutoSlide(); });
+  });
+
+  // Touch/swipe support
+  let startX = 0;
+  track.addEventListener('touchstart', e => { startX = e.touches[0].clientX; stopAutoSlide(); }, { passive: true });
+  track.addEventListener('touchend', e => {
+    const diff = startX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) diff > 0 ? nextSlide() : prevSlide();
+    startAutoSlide();
+  }, { passive: true });
+
+  startAutoSlide();
+}
+
+/* ═══ NAVBAR SCROLL BEHAVIOR ═══ */
+function initNavbar() {
+  const nav = document.getElementById('mainNav');
+  const brandBar = document.querySelector('.top-brand-bar');
+  if (!nav) return;
+
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        // Just update scroll progress, nav stays sticky via CSS
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+}
+
+/* ═══ MOBILE NAV ═══ */
+function initMobileNav() {
+  const hamburger = document.getElementById('hamburger');
+  const overlay = document.getElementById('mobileOverlay');
+  if (!hamburger || !overlay) return;
+
+  hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('open');
+    overlay.classList.toggle('open');
+    document.body.style.overflow = overlay.classList.contains('open') ? 'hidden' : '';
+  });
+
+  overlay.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => closeMobileNav());
+  });
+
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeMobileNav();
+  });
+}
+
+window.closeMobileNav = function () {
+  document.getElementById('mobileOverlay')?.classList.remove('open');
+  document.getElementById('hamburger')?.classList.remove('open');
+  document.body.style.overflow = '';
+};
+
+/* ═══ SCROLL REVEAL ═══ */
+function initScrollReveal() {
+  const elements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+  if (!elements.length) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+
+  elements.forEach(el => observer.observe(el));
+}
+
+/* ═══ COUNTER ANIMATION ═══ */
+function initCounters() {
+  const nums = document.querySelectorAll('.counter-num');
+  if (!nums.length) return;
+  let animated = false;
+
+  function animateCounters() {
+    if (animated) return;
+    const first = nums[0].getBoundingClientRect();
+    if (first.top > window.innerHeight) return;
+    animated = true;
+
+    nums.forEach(el => {
+      const target = parseInt(el.dataset.count);
+      const suffix = el.dataset.suffix || '';
+      const duration = 2000;
+      const start = performance.now();
+
+      function update(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.floor(target * ease).toLocaleString() + suffix;
+        if (progress < 1) requestAnimationFrame(update);
+      }
+      requestAnimationFrame(update);
+    });
+  }
+
+  window.addEventListener('scroll', animateCounters, { passive: true });
+  animateCounters();
+}
+
+/* ═══ BILINGUAL LANGUAGE TOGGLE ═══ */
+const translations = {
+  'nav-home': { en: 'Home', hi: 'होम' },
+  'nav-who': { en: 'Who We Are', hi: 'हम कौन हैं' },
+  'dd-about': { en: 'About Us', hi: 'हमारे बारे में' },
+  'dd-vision': { en: 'Vision & Mission', hi: 'दृष्टि और मिशन' },
+  'dd-gov': { en: 'Governance', hi: 'शासन' },
+  'dd-team': { en: 'Our Team', hi: 'हमारी टीम' },
+  'dd-edu': { en: 'Shiksha Setu — Education', hi: 'शिक्षा सेतु — शिक्षा' },
+  'dd-health': { en: 'Arogya Gram — Health', hi: 'आरोग्य ग्राम — स्वास्थ्य' },
+  'dd-women': { en: 'Shakti — Women\'s Welfare', hi: 'शक्ति — महिला कल्याण' },
+  'dd-udyam': { en: 'Udyam — Livelihoods', hi: 'उद्यम — आजीविका' },
+  'nav-programs': { en: 'Programs', hi: 'कार्यक्रम' },
+  'nav-impact': { en: 'Impact Stories', hi: 'प्रभाव कहानियां' },
+  'nav-contact': { en: 'Contact Us', hi: 'संपर्क करें' },
+  'nav-dashboard': { en: 'Dashboard', hi: 'डैशबोर्ड' },
+
+  'hero-h1-1': { en: 'Transforming Lives Through', hi: 'जीवन को बदलना' },
+  'hero-h1-2': { en: 'Education, Health & Hope', hi: 'शिक्षा, स्वास्थ्य और आशा के जरिए' },
+  'hero-btn1': { en: 'About Us', hi: 'हमारे बारे में' },
+  'hero-btn2': { en: 'Contact Us', hi: 'संपर्क करें' },
+  's1-h': { en: 'Enabling Education & Opportunity for Every Child in India', hi: 'भारत के हर बच्चे के लिए शिक्षा और अवसर सक्षम करना' },
+  's1-b1': { en: 'Our Programs', hi: 'हमारे कार्यक्रम' },
+  's1-b2': { en: 'Contact Us', hi: 'संपर्क करें' },
+  's3-h': { en: 'Empowering Women to Lead, Earn & Thrive with Dignity', hi: 'महिलाओं को नेतृत्व, कमाई और सम्मान के साथ जीने में सक्षम बनाना' },
+  's3-b1': { en: 'Shakti Program', hi: 'शक्ति कार्यक्रम' },
+  's3-b2': { en: 'Contact Us', hi: 'संपर्क करें' },
+  'hero-s1': { en: 'Lives Impacted', hi: 'जीवन प्रभावित' },
+  'hero-s2': { en: 'Villages Reached', hi: 'गांव पहुंचे' },
+  'hero-s3': { en: 'Women Empowered', hi: 'महिलाएं सशक्त' },
+  'c1': { en: 'Lives Impacted', hi: 'जीवन प्रभावित' },
+  'c2': { en: 'Villages Reached', hi: 'गांव पहुंचे' },
+  'c3': { en: 'Women Empowered', hi: 'महिलाएं सशक्त' },
+  'c4': { en: 'Children in School', hi: 'बच्चे स्कूल में' },
+  'w-tag': { en: 'Who We Are', hi: 'हम कौन हैं' },
+  'w-p1': { en: 'AASW Foundation catalyses exchange of knowledge and best practices, facilitates meaningful partnerships, and promotes grassroots leadership to build a more equitable India.', hi: 'AASW फाउंडेशन ज्ञान और सर्वोत्तम प्रथाओं के आदान-प्रदान को उत्प्रेरित करता है।' },
+  'w-b1': { en: 'Nurturing Education & Child Development', hi: 'शिक्षा और बाल विकास' },
+  'w-b2': { en: 'Women\'s Empowerment & Welfare', hi: 'महिला सशक्तिकरण और कल्याण' },
+  'w-b3': { en: 'Catalysing Rural Health & Well-being', hi: 'ग्रामीण स्वास्थ्य और कल्याण' },
+  'w-b4': { en: 'Building Sustainable Livelihoods', hi: 'सतत आजीविका का निर्माण' },
+  'prog-tag': { en: 'What We Do', hi: 'हम क्या करते हैं' },
+  'prog-h2': { en: 'Our Programs & Initiatives', hi: 'हमारे कार्यक्रम और पहल' },
+  'prog-sub': { en: 'Six integrated pillars creating lasting transformation in India\'s most underserved communities.', hi: 'छह एकीकृत स्तंभ भारत के सबसे वंचित समुदायों में स्थायी परिवर्तन ला रहे हैं।' },
+  'p1-tag': { en: 'Education', hi: 'शिक्षा' },
+  'p1-h': { en: 'Shiksha Setu', hi: 'शिक्षा सेतु' },
+  'p1-p': { en: 'Bridging learning gaps for children in remote areas through community schools, digital classrooms, and scholarship support.', hi: 'सामुदायिक स्कूलों, डिजिटल कक्षाओं और छात्रवृत्ति सहायता से दूरदराज के बच्चों की शिक्षा में सेतु बनाना।' },
+  'p2-tag': { en: 'Health', hi: 'स्वास्थ्य' },
+  'p2-h': { en: 'Arogya Gram', hi: 'आरोग्य ग्राम' },
+  'p2-p': { en: 'Bringing preventive healthcare, mobile medical camps, and maternal wellness directly to underserved villages.', hi: 'वंचित गांवों में निवारक स्वास्थ्य सेवा, मोबाइल मेडिकल कैंप और मातृ कल्याण पहुंचाना।' },
+  'p3-tag': { en: 'Women', hi: 'महिला' },
+  'p3-h': { en: 'Shakti', hi: 'शक्ति' },
+  'p3-p': { en: 'Empowering women with vocational skills, self-help groups, legal awareness, and entrepreneurship support.', hi: 'व्यावसायिक कौशल, स्वयं सहायता समूह, कानूनी जागरूकता और उद्यमिता सहायता से महिलाओं को सशक्त बनाना।' },
+  'p4-tag': { en: 'Livelihoods', hi: 'आजीविका' },
+  'p4-h': { en: 'Udyam', hi: 'उद्यम' },
+  'p4-p': { en: 'Supporting farmers and rural youth with skill development, agri-tech, and market linkages to build sustainable incomes.', hi: 'कौशल विकास, कृषि-तकनीक और बाजार संपर्क से किसानों और ग्रामीण युवाओं का समर्थन।' },
+  'p5-tag': { en: 'Skills', hi: 'कौशल' },
+  'p5-h': { en: 'Kaushal', hi: 'कौशल' },
+  'p5-p': { en: 'Market-aligned vocational training for rural youth — from digital literacy to trade skills — creating self-sufficient livelihoods.', hi: 'ग्रामीण युवाओं के लिए बाजार-उन्मुख व्यावसायिक प्रशिक्षण — डिजिटल साक्षरता से व्यापार कौशल तक।' },
+  'p6-tag': { en: 'Finance', hi: 'वित्त' },
+  'p6-h': { en: 'Vittiya', hi: 'वित्तीय' },
+  'p6-p': { en: 'Linking unbanked rural households to formal financial services — savings, credit, insurance, and government schemes.', hi: 'बैंकिंग सुविधा से वंचित ग्रामीण परिवारों को औपचारिक वित्तीय सेवाओं से जोड़ना।' },
+  'e-tag': { en: 'Our Impact', hi: 'हमारा प्रभाव' },
+  'e-h2-1': { en: 'Driven by People,', hi: 'लोगों से प्रेरित,' },
+  'e-h2-2': { en: 'Guided by Purpose', hi: 'उद्देश्य से निर्देशित' },
+  'e-p1': { en: 'AASW Foundation is a unique nonprofit society owned, managed, and dedicated entirely to the benefit of India\'s most underserved communities — united by a common goal to innovate, catalyse meaningful partnerships, share knowledge, and achieve collective impact.', hi: 'AASW फाउंडेशन एक अद्वितीय गैर-लाभकारी संस्था है जो पूर्ण रूप से भारत के सबसे वंचित समुदायों के लाभ के लिए समर्पित है।' },
+  'e-p2': { en: 'We are a bridge — connecting vulnerable communities with the resources, opportunities, and support systems they need to chart their own paths to dignity and lasting prosperity.', hi: 'हम एक सेतु हैं — कमजोर समुदायों को संसाधनों, अवसरों और सहायता प्रणालियों से जोड़ते हैं।' },
+  'ov-eyebrow': { en: 'AASW Foundation Overview', hi: 'AASW फाउंडेशन अवलोकन' },
+  'ov-h2': { en: 'Building an Equitable India, One Community at a Time', hi: 'एक समतामूलक भारत का निर्माण, एक समुदाय साथ' },
+  'ov-p1': { en: 'AASW Foundation unites communities, changemakers, and institutions around a cohesive vision of inclusive development. Our focused, evidence-based approach allows for meaningful progress across four Indian states.', hi: 'AASW फाउंडेशन समावेशी विकास की एकजुट दृष्टि के चारों ओर समुदायों, परिवर्तनकर्ताओं और संस्थानों को एकजुट करता है।' },
+  'ov-p2': { en: 'We promote an inclusive approach — increasing diversity, accessibility, and sustainability in everything we do. We bring together professionals from government, civil society, and corporate India.', hi: 'हम एक समावेशी दृष्टिकोण को बढ़ावा देते हैं — विविधता, पहुंच और स्थिरता बढ़ाते हैं।' },
+  'ov-btn1': { en: 'Our Programs', hi: 'हमारे कार्यक्रम' },
+  'ov-btn2': { en: 'Contact Us', hi: 'संपर्क करें' },
+  'ov-card-title': { en: 'All-round Advancement for Social Welfare', hi: 'सामाजिक कल्याण के लिए सर्वांगीण उन्नति' },
+  'ov-card-text': { en: 'We are a unique nonprofit solely dedicated to the advancement of underserved communities — owned, managed, and operated for the exclusive benefit of the people we serve.', hi: 'हम एक अद्वितीय गैर-लाभकारी संस्था हैं जो पूर्ण रूप से वंचित समुदायों की उन्नति के लिए समर्पित है।' },
+  'testi-tag': { en: 'Voices of Change', hi: 'बदलाव की आवाजें' },
+  'testi-h2': { en: 'What People Are Saying', hi: 'लोग क्या कह रहे हैं' },
+  'testi-sub': { en: 'Real stories from communities, beneficiaries, and partners who have experienced the AASW Foundation difference.', hi: 'समुदायों, लाभार्थियों और साझेदारों की वास्तविक कहानियां।' },
+  't1-text': { en: '"The Shakti program changed everything for me. I now run my own tailoring business and send my children to school. AASW Foundation gave me the confidence to believe in myself."', hi: '"शक्ति कार्यक्रम ने मेरे लिए सब कुछ बदल दिया। अब मैं अपना सिलाई व्यवसाय चलाती हूं।"' },
+  't1-name': { en: 'Priya Devi', hi: 'प्रिया देवी' },
+  't1-role': { en: 'Shakti Program Beneficiary, Alwar, Rajasthan', hi: 'शक्ति कार्यक्रम लाभार्थी, अलवर, राजस्थान' },
+  't2-text': { en: '"AASW Foundation is a model of transparency and community engagement. Partnering with them for our CSR initiatives has been one of our best decisions."', hi: '"AASW फाउंडेशन पारदर्शिता और सामुदायिक जुड़ाव का एक आदर्श है।"' },
+  't2-name': { en: 'Ramesh Gupta', hi: 'रमेश गुप्ता' },
+  't2-role': { en: 'Head of CSR, Sunrise Industries Ltd.', hi: 'CSR प्रमुख, सनराइज इंडस्ट्रीज' },
+  't3-text': { en: '"Before the mobile health camp, we had to travel 40 km for medical help. Today we have regular check-ups and our mothers are healthier."', hi: '"मोबाइल स्वास्थ्य शिविर से पहले हमें 40 किमी यात्रा करनी पड़ती थी।"' },
+  't3-name': { en: 'Sundar Lal', hi: 'सुंदर लाल' },
+  't3-role': { en: 'Village Head, Arogya Gram Program, MP', hi: 'ग्राम प्रधान, आरोग्य ग्राम कार्यक्रम, म.प्र.' },
+  'nl-h2': { en: 'Subscribe to Our Newsletter', hi: 'हमारे न्यूज़लेटर की सदस्यता लें' },
+  'nl-sub': { en: 'Get our latest updates, impact stories, and program news delivered straight to your inbox.', hi: 'हमारे नवीनतम अपडेट, प्रभाव कहानियां और कार्यक्रम समाचार सीधे अपने इनबॉक्स में प्राप्त करें।' },
+  'nl-btn': { en: 'SUBSCRIBE', hi: 'सदस्यता लें' },
+  'f-logo-sub': { en: 'Empowering Lives · Building Futures', hi: 'जीवन सशक्त · भविष्य निर्माण' },
+  'f-about': { en: 'We believe that community, compassion, and consistent action can make a significant positive impact on India\'s social and economic well-being.', hi: 'हम मानते हैं कि समुदाय, करुणा और निरंतर कार्रवाई सकारात्मक प्रभाव डाल सकती है।' },
+  'f-h1': { en: 'Quick Links', hi: 'त्वरित लिंक' },
+  'f-l1': { en: 'Home', hi: 'होम' },
+  'f-l2': { en: 'About Us', hi: 'हमारे बारे में' },
+  'f-l3': { en: 'Our Programs', hi: 'हमारे कार्यक्रम' },
+  'f-l4': { en: 'Impact Stories', hi: 'प्रभाव कहानियां' },
+  'f-l5': { en: 'Our Team', hi: 'हमारी टीम' },
+  'f-l6': { en: 'Contact Us', hi: 'संपर्क करें' },
+  'f-h2': { en: 'Useful Links', hi: 'उपयोगी लिंक' },
+  'f-u1': { en: 'Privacy Policy', hi: 'गोपनीयता नीति' },
+  'f-u5': { en: 'Media & Press', hi: 'मीडिया और प्रेस' },
+  'f-u6': { en: 'Volunteer With Us', hi: 'हमारे साथ स्वयंसेवा करें' },
+  'f-h3': { en: 'Connect With Us', hi: 'हमसे जुड़ें' },
+  'f-addr': { en: 'Ward No 2 Ambedkar Nagar Rura Kanpur Dehat Uttar Pradesh', hi: 'वार्ड नं 2 अंबेडकर नगर रुरा कानपुर देहात उत्तर प्रदेश' },
+  'f-hours': { en: 'Mon – Sat: 9:30 AM – 6:00 PM', hi: 'सोम – शनि: 9:30 AM – 6:00 PM' },
+  'f-copy': { en: '© 2025 AASW Foundation. All rights reserved. | Registered Non-Profit · 80G & 12A Certified', hi: '© 2025 AASW फाउंडेशन। सर्वाधिकार सुरक्षित। | पंजीकृत गैर-लाभकारी · 80G और 12A प्रमाणित' },
+  // Governance page
+  'gov-banner-h': { en: 'Governance & Accountability', hi: 'शासन और जवाबदेही' },
+  'gov-banner-p': { en: 'Transparency and integrity in everything we do', hi: 'हम जो भी करते हैं उसमें पारदर्शिता और ईमानदारी' },
+  'gov-tag': { en: 'Transparency', hi: 'पारदर्शिता' },
+  'gov-h2': { en: 'Governance & Accountability', hi: 'शासन और जवाबदेही' },
+  'gov-sub': { en: 'AASW Foundation operates with the highest standards of integrity, transparency, and accountability to our donors and the communities we serve.', hi: 'AASW फाउंडेशन अपने दानदाताओं और समुदायों के प्रति सर्वोच्च ईमानदारी, पारदर्शिता और जवाबदेही के साथ कार्य करता है।' },
+  'gov-c1-h': { en: 'Board of Trustees', hi: 'न्यासी मंडल' },
+  'gov-c1-p': { en: 'Our Board oversees the foundation\'s strategic direction, financial health, and adherence to our core values, meeting quarterly to review program impacts and audits.', hi: 'हमारा बोर्ड फाउंडेशन की रणनीतिक दिशा, वित्तीय स्वास्थ्य और मूल मूल्यों की निगरानी करता है, तिमाही बैठकों में कार्यक्रम प्रभावों और ऑडिट की समीक्षा करता है।' },
+  'gov-c2-h': { en: 'Financial Audits', hi: 'वित्तीय ऑडिट' },
+  'gov-c2-p': { en: 'We undergo rigorous annual statutory audits by independent chartered accountants. We are 12A and 80G certified, complying fully with all governmental requirements.', hi: 'हम स्वतंत्र चार्टर्ड एकाउंटेंट्स द्वारा कठोर वार्षिक सांविधिक ऑडिट से गुजरते हैं। हम 12A और 80G प्रमाणित हैं।' },
+  'gov-c3-h': { en: 'Compliance & Ethics', hi: 'अनुपालन और नैतिकता' },
+  'gov-c3-p': { en: 'We follow strict ethical guidelines and comply with all applicable laws, including the Indian Societies Registration Act, FCRA regulations, and Income Tax provisions.', hi: 'हम सख्त नैतिक दिशानिर्देशों का पालन करते हैं और भारतीय सोसायटी पंजीकरण अधिनियम, FCRA विनियमों और आयकर प्रावधानों सहित सभी लागू कानूनों का अनुपालन करते हैं।' },
+  'gov-c4-h': { en: 'Transparency Policy', hi: 'पारदर्शिता नीति' },
+  'gov-c4-p': { en: 'We publish annual reports, audited financial statements, and impact assessments. Our stakeholders have full visibility into how funds are utilized.', hi: 'हम वार्षिक रिपोर्ट, ऑडिटेड वित्तीय विवरण और प्रभाव मूल्यांकन प्रकाशित करते हैं। हमारे हितधारकों को धन उपयोग की पूरी जानकारी होती है।' },
+  // Team page
+  'team-banner-h': { en: 'Our Team', hi: 'हमारी टीम' },
+  'team-banner-p': { en: 'The passionate people driving change across India', hi: 'भारत भर में बदलाव लाने वाले जुनूनी लोग' },
+  'team-tag': { en: 'Leadership', hi: 'नेतृत्व' },
+  'team-h2': { en: 'Meet Our Dedicated Team', hi: 'हमारी समर्पित टीम से मिलें' },
+  'team-sub': { en: 'The passionate individuals working tirelessly to uplift communities and drive positive change across India.', hi: 'भारत भर में समुदायों को ऊपर उठाने और सकारात्मक बदलाव लाने के लिए अथक काम करने वाले जुनूनी लोग।' },
+  'tm1-name': { en: 'SATYA PRAKASH TRIVEDI', hi: 'सत्य प्रकाश त्रिवेदी' },
+  'tm1-role': { en: 'Founder & President', hi: 'संस्थापक और अध्यक्ष' },
+  'tm1-desc': { en: 'Visionary leader with 20+ years in community development and social welfare across rural India.', hi: '20+ वर्षों के अनुभव के साथ ग्रामीण भारत में सामुदायिक विकास और सामाजिक कल्याण में दूरदर्शी नेता।' },
+};
+
+function initLanguage() {
+  const saved = localStorage.getItem('aasw-lang') || 'en';
+  setLang(saved);
+}
+
+function setLang(lang) {
+  localStorage.setItem('aasw-lang', lang);
+  document.body.classList.toggle('lang-hi', lang === 'hi');
+
+  document.querySelectorAll('[data-t]').forEach(el => {
+    const key = el.getAttribute('data-t');
+    if (translations[key] && translations[key][lang]) {
+      if (el.tagName === 'INPUT') {
+        el.placeholder = translations[key][lang];
+      } else {
+        el.textContent = translations[key][lang];
+      }
+    }
+  });
+
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+
+  if (typeof initDynamicYear === 'function') initDynamicYear();
+}
+
+window.setLang = setLang;
+
+/* ═══ NEWSLETTER ═══ */
+function initNewsletter() {
+  document.getElementById('nlBtn')?.addEventListener('click', () => {
+    const input = document.getElementById('nlInput');
+    const btn = document.getElementById('nlBtn');
+    if (!input.value || !input.value.includes('@')) {
+      input.style.outline = '2px solid #ff4444';
+      input.style.outlineOffset = '2px';
+      setTimeout(() => { input.style.outline = ''; }, 2000);
+      return;
+    }
+    input.value = '';
+    const lang = document.body.classList.contains('lang-hi') ? 'hi' : 'en';
+    btn.textContent = lang === 'hi' ? '✓ धन्यवाद!' : '✓ Thank you!';
+    btn.style.background = '#059669';
+    btn.style.color = '#fff';
+    setTimeout(() => {
+      btn.textContent = lang === 'hi' ? 'सदस्यता लें' : 'SUBSCRIBE';
+      btn.style.background = '';
+      btn.style.color = '';
+    }, 3000);
+  });
+}
+
+/* ═══ BACK TO TOP ═══ */
+function initBackToTop() {
+  const btn = document.getElementById('btt');
+  if (!btn) return;
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('show', window.scrollY > 500);
+  }, { passive: true });
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
+
+/* ═══ SMOOTH ANCHORS ═══ */
+function initSmoothAnchors() {
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      const id = this.getAttribute('href');
+      if (id === '#') return;
+      const target = document.querySelector(id);
+      if (!target) return;
+      e.preventDefault();
+      const offset = 130; // brand bar + nav height
+      const top = target.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: 'smooth' });
+    });
+  });
+}
+
+/* ═══ SCROLL PROGRESS ═══ */
+function initScrollProgress() {
+  const bar = document.createElement('div');
+  bar.id = 'scroll-progress';
+  document.body.appendChild(bar);
+
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = docHeight > 0 ? (scrollTop / docHeight * 100) : 0;
+    bar.style.width = pct + '%';
+  }, { passive: true });
+}
+
+/* ═══ DYNAMIC YEAR ═══ */
+function initDynamicYear() {
+  const fCopy = document.querySelector('[data-t="f-copy"]');
+  if (fCopy) {
+    const isHi = document.body.classList.contains('lang-hi');
+    const year = new Date().getFullYear();
+    fCopy.textContent = isHi
+      ? `© ${year} AASW फाउंडेशन। सर्वाधिकार सुरक्षित। | पंजीकृत गैर-लाभकारी · 80G और 12A प्रमाणित`
+      : `© ${year} AASW Foundation. All rights reserved. | Registered Non-Profit · 80G & 12A Certified`;
+  }
+}
