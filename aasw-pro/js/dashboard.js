@@ -119,6 +119,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // --- Logout Logic ---
+    const logoutBtns = document.querySelectorAll('.logout-btn');
+    logoutBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            sessionStorage.removeItem('adminAuth');
+            localStorage.removeItem('adminAuth');
+            window.location.href = '/';
+        });
+    });
+
     // --- 4. Fetch Dashboard Stats ---
     const fetchDashboardStats = async () => {
         try {

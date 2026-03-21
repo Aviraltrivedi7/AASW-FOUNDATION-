@@ -1,8 +1,8 @@
 {
-  "visitors": 42,
+  "visitors": 58,
   "pageViews": {
-    "/index.html": 20,
-    "/dashboard.html": 17,
+    "/index.html": 31,
+    "/dashboard.html": 22,
     "/admin/dashboard": 3,
     "/admin/logout": 2
   }
