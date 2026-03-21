@@ -150,9 +150,9 @@ Replace these placeholder blocks with `<img>` tags:
 ### 📞 Contact Details to Update
 
 In `index.html`, update:
-- Email: `info@aaswfoundation.org`
-- Phone: `+91 98765 43210`
-- Address: `42, Jal Path, Civil Lines, Jaipur`
+- Email: `aaswfoundation06@gmail.com`
+- Phone: `+91 9984156418`
+- Address: `Ward no 2 Ambedkar Nagar Rura Kanpur Dehat`
 
 ---
 
