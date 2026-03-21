@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - AASW Foundation</title>
+    <title>ADMIN LOGIN - AASW Foundation</title>
     <!-- Explicit permissive CSP to override any implicit local restrictions -->
     <meta http-equiv="Content-Security-Policy" content="default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: gap: content: https://ssl.gstatic.com; media-src *; img-src * 'self' data: content: https: http:;">
     <!-- Modern Font -->
@@ -27,7 +27,7 @@
         <nav class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo-mark">AA</div>
-                <div class="logo-text">Dashboard</div>
+                <div class="logo-text">ADMIN LOGIN</div>
                 <button class="mobile-toggle" id="mobileToggle">
                     <i data-lucide="x"></i>
                 </button>
@@ -35,31 +35,25 @@
             
             <ul class="nav-links">
                 <li class="nav-item active">
-                    <a href="#" class="nav-link">
+                    <a href="#" class="nav-link" data-target="overview">
                         <i data-lucide="layout-dashboard"></i>
                         <span>Overview</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="#" class="nav-link" data-target="users">
                         <i data-lucide="users"></i>
-                        <span>Users & Donors</span>
+                        <span>Users</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i data-lucide="activity"></i>
-                        <span>Campaigns</span>
+                    <a href="#" class="nav-link" data-target="messages">
+                        <i data-lucide="mail"></i>
+                        <span>Messages</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i data-lucide="credit-card"></i>
-                        <span>Donations</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="#" class="nav-link" data-target="settings">
                         <i data-lucide="settings"></i>
                         <span>Settings</span>
                     </a>
@@ -106,45 +100,48 @@
 
             <!-- Dashboard Content -->
             <div class="content-wrapper">
-                <div class="page-header">
-                    <div>
-                        <h1 class="page-title">Welcome back, Admin 👋</h1>
-                        <p class="page-subtitle">Here is what's happening at AASW Foundation today.</p>
+                
+                <!-- OVERVIEW TAB -->
+                <div id="view-overview" class="view-section active">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Welcome back, Admin 👋</h1>
+                            <p class="page-subtitle">Here is what's happening at AASW Foundation today.</p>
+                        </div>
                     </div>
-                </div>
 
                 <!-- KPI Cards Section -->
                 <div class="kpi-grid">
                     <div class="kpi-card glass">
                         <div class="kpi-icon i-purple">
-                            <i data-lucide="wallet"></i>
+                            <i data-lucide="eye"></i>
                         </div>
                         <div class="kpi-details">
-                            <p class="kpi-title">Total Donations</p>
-                            <h3 class="kpi-value">₹ 14,25,000</h3>
-                            <p class="kpi-trend positive"><i data-lucide="trending-up"></i> +12% this month</p>
+                            <p class="kpi-title">Total Visitors</p>
+                            <h3 class="kpi-value" id="valVisitors">...</h3>
+                            <p class="kpi-trend positive"><i data-lucide="trending-up"></i> Live Tracking</p>
                         </div>
                     </div>
                     
                     <div class="kpi-card glass">
                         <div class="kpi-icon i-blue">
-                            <i data-lucide="users-round"></i>
+                            <i data-lucide="message-square"></i>
                         </div>
                         <div class="kpi-details">
-                            <p class="kpi-title">Active Beneficiaries</p>
-                            <h3 class="kpi-value">8,401</h3>
-                            <p class="kpi-trend positive"><i data-lucide="trending-up"></i> +5% this week</p>
+                            <p class="kpi-title">Contact Messages</p>
+                            <h3 class="kpi-value" id="valMessages">...</h3>
+                            <p class="kpi-trend neutral"><i data-lucide="minus"></i> Queries received</p>
                         </div>
                     </div>
                     
                     <div class="kpi-card glass">
                         <div class="kpi-icon i-gold">
-                            <i data-lucide="heart-handshake"></i>
+                            <i data-lucide="users"></i>
                         </div>
                         <div class="kpi-details">
-                            <p class="kpi-title">Active Campaigns</p>
-                            <h3 class="kpi-value">12</h3>
-                            <p class="kpi-trend neutral"><i data-lucide="minus"></i> Same as last month</p>
+                            <p class="kpi-title">Newsletter Subscribers</p>
+                            <h3 class="kpi-value" id="valSubscribers">...</h3>
+                            <p class="kpi-trend positive"><i data-lucide="trending-up"></i> Growing list</p>
                         </div>
                     </div>
                     
@@ -162,18 +159,7 @@
 
                 <!-- Charts Section -->
                 <div class="charts-grid">
-                    <div class="chart-container glass">
-                        <div class="chart-header">
-                            <h3>Donation Overview</h3>
-                            <select class="glass-select">
-                                <option>This Year</option>
-                                <option>Last Year</option>
-                            </select>
-                        </div>
-                        <div class="chart-wrapper">
-                            <canvas id="donationChart"></canvas>
-                        </div>
-                    </div>
+                    <!-- Space previously occupied by Donation Chart -->
                     
                     <div class="chart-container glass">
                         <div class="chart-header">
@@ -185,76 +171,103 @@
                     </div>
                 </div>
 
-                <!-- Recent Activity Table -->
+                <!-- Recent Messages Table -->
                 <div class="table-container glass">
                     <div class="table-header">
-                        <h3>Recent Transactions</h3>
-                        <a href="#" class="view-all">View All</a>
+                        <h3>Recent Messages</h3>
                     </div>
                     <div class="table-responsive">
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Donor Name</th>
-                                    <th>Campaign</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Subject</th>
                                     <th>Date</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="recentMessagesTbody">
+                                <!-- Dynamically populated by JS -->
                                 <tr>
-                                    <td>
-                                        <div class="table-user">
-                                            <div class="tu-avatar">RA</div>
-                                            <span>Rahul Sharma</span>
-                                        </div>
-                                    </td>
-                                    <td>Arogya Gram (Health)</td>
-                                    <td>Oct 24, 2025</td>
-                                    <td class="amount">₹ 5,000</td>
-                                    <td><span class="status-badge success">Completed</span></td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="table-user">
-                                            <div class="tu-avatar">P</div>
-                                            <span>Priya Desai</span>
-                                        </div>
-                                    </td>
-                                    <td>Shakti (Women Emp.)</td>
-                                    <td>Oct 23, 2025</td>
-                                    <td class="amount">₹ 12,500</td>
-                                    <td><span class="status-badge success">Completed</span></td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="table-user">
-                                            <div class="tu-avatar">M</div>
-                                            <span>Manoj Tiwari</span>
-                                        </div>
-                                    </td>
-                                    <td>General Fund</td>
-                                    <td>Oct 22, 2025</td>
-                                    <td class="amount">₹ 2,000</td>
-                                    <td><span class="status-badge pending">Processing</span></td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="table-user">
-                                            <div class="tu-avatar">S</div>
-                                            <span>Sunita Verma</span>
-                                        </div>
-                                    </td>
-                                    <td>Child Education</td>
-                                    <td>Oct 20, 2025</td>
-                                    <td class="amount">₹ 10,000</td>
-                                    <td><span class="status-badge success">Completed</span></td>
+                                    <td colspan="4" style="text-align:center; padding: 2rem;">Loading messages...</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
+                <!-- END OVERVIEW TAB -->
+
+                <!-- USERS TAB -->
+                <div id="view-users" class="view-section" style="display:none;">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Users & Subscribers</h1>
+                            <p class="page-subtitle">View and manage newsletter subscribers.</p>
+                        </div>
+                    </div>
+                    <div class="table-container glass" style="margin-top: 2rem;">
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Email Address</th>
+                                        <th>Date Subscribed</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="allUsersTbody">
+                                    <tr><td colspan="2" style="text-align:center; padding: 2rem;">Loading users...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- END USERS TAB -->
+
+                <!-- MESSAGES TAB -->
+                <div id="view-messages" class="view-section" style="display:none;">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Contact Messages</h1>
+                            <p class="page-subtitle">All inquiries and messages from the contact form.</p>
+                        </div>
+                    </div>
+                    <div class="table-container glass" style="margin-top: 2rem;">
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Subject</th>
+                                        <th>Message</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="allMessagesTbody">
+                                    <tr><td colspan="5" style="text-align:center; padding: 2rem;">Loading messages...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- END MESSAGES TAB -->
+
+                <!-- SETTINGS TAB -->
+                <div id="view-settings" class="view-section" style="display:none;">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Settings</h1>
+                            <p class="page-subtitle">Admin and platform configurations.</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card glass" style="margin-top:2rem; width: 100%;">
+                        <div class="kpi-details">
+                            <p class="kpi-title">Settings module</p>
+                            <h3 style="color:#94a3b8; font-size:1rem; font-weight:400; padding-top:10px;">Configuration functions are currently managed in the source files.</h3>
+                        </div>
+                    </div>
+                </div>
+                <!-- END SETTINGS TAB -->
 
             </div>
         </main>

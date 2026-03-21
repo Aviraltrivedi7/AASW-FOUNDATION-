@@ -12,6 +12,7 @@
 
 /* ─── ROOT TOKENS ─── */
 :root {
+    --gold: #E5A100;
     --gold-vivid: #FFB830;
     --gold-dark: #C8790A;
     --glass-bg: rgba(255, 255, 255, 0.07);
@@ -24,7 +25,7 @@
 
 /* ═══ GLOBAL BODY REFINEMENT ═══ */
 body {
-    font-family: 'Inter', 'Inter', sans-serif;
+    font-family: 'Inter', sans-serif;
     letter-spacing: -0.01em;
 }
 
@@ -195,7 +196,7 @@ body::before {
 
 /* HERO stats upgrade */
 .hero-stats {
-    gap: 36px !important;
+    gap: 36px;
     padding-top: 4px;
 }
 
@@ -262,7 +263,7 @@ body::before {
             #0f4c2a 40%,
             #1a6e3c 70%,
             #0a3520 100%) !important;
-    padding: 72px 0 !important;
+    padding: 72px 0;
     position: relative;
 }
 
@@ -294,14 +295,14 @@ body::before {
             rgba(39, 174, 96, 0.12)) !important;
     border: 1px solid rgba(39, 174, 96, 0.25) !important;
     box-shadow: 0 2px 12px rgba(39, 174, 96, 0.08) !important;
-    font-size: .76rem !important;
-    letter-spacing: .14em !important;
+    font-size: .76rem;
+    letter-spacing: .14em;
 }
 
 /* Section titles */
 .section-title {
-    letter-spacing: -.02em !important;
-    line-height: 1.15 !important;
+    letter-spacing: -.02em;
+    line-height: 1.15;
 }
 
 /* ═══ PROGRAM CARDS — MAJOR UPGRADE ═══ */
@@ -363,13 +364,13 @@ body::before {
 }
 
 .prog-body {
-    padding: 28px 28px 24px !important;
+    padding: 28px 28px 24px;
 }
 
 .prog-body h3 {
-    font-size: 1.25rem !important;
-    font-weight: 800 !important;
-    letter-spacing: -.015em !important;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -.015em;
 }
 
 .prog-link {
@@ -539,13 +540,13 @@ body::before {
 }
 
 .overview-info {
-    padding: 28px !important;
+    padding: 28px;
 }
 
 .overview-info strong {
-    font-size: 1.05rem !important;
-    font-weight: 800 !important;
-    letter-spacing: -.01em !important;
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: -.01em;
 }
 
 /* ═══ TESTIMONIALS — MAJOR UPGRADE ═══ */
@@ -602,7 +603,7 @@ body::before {
 }
 
 .testi-body {
-    padding: 36px 32px 32px !important;
+    padding: 36px 32px 32px;
 }
 
 .testi-stars {

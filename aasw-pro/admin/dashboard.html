@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AASW Admin - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --green-dark: #0f4c2a;
+            --green: #1a6e3c;
+            --green-light: #27ae60;
+            --gold: #f5a623;
+            --bg: #f4f8f5;
+            --surface: #ffffff;
+            --text-dark: #1a1a1a;
+            --text-muted: #666;
+            --border: #e0e0e0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-dark); }
+
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, var(--green-dark), var(--green));
+            height: 100vh;
+            position: fixed;
+            color: #fff;
+            padding: 24px;
+            box-shadow: 4px 0 24px rgba(0,0,0,0.1);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .brand-icon {
+            width: 40px; height: 40px;
+            background: var(--gold);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-family: 'Montserrat', sans-serif;
+            color: var(--green-dark);
+        }
+
+        .nav-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px 16px;
+            color: rgba(255,255,255,0.7);
+            border-radius: 10px;
+            text-decoration: none;
+            margin-bottom: 8px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-item.active {
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .nav-item:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+        .logout-btn {
+            position: absolute; bottom: 30px; left: 24px; right: 24px;
+            background: rgba(231,76,60,0.1); color: #ff6b6b;
+            text-align: center; padding: 14px; border-radius: 10px;
+            text-decoration: none; font-weight: 600; transition: all 0.3s;
+        }
+        .logout-btn:hover { background: #e74c3c; color: #fff; }
+
+        .main-content { margin-left: 260px; padding: 40px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .header h1 { font-family: 'Montserrat', sans-serif; font-weight: 700; color: var(--green-dark); }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 40px; }
+        
+        .stat-card {
+            background: var(--surface);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+            display: flex; align-items: center; gap: 20px;
+            transition: transform 0.3s;
+        }
+        .stat-card:hover { transform: translateY(-4px); border-color: var(--green-light); }
+
+        .stat-icon {
+            width: 60px; height: 60px;
+            border-radius: 14px;
+            background: rgba(26,110,60,0.1);
+            color: var(--green);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-card.gold .stat-icon { background: rgba(245,166,35,0.1); color: var(--gold); }
+        .stat-card.blue .stat-icon { background: rgba(52,152,219,0.1); color: #3498db; }
+
+        .stat-info p { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+        .stat-info h3 { font-size: 2rem; font-family: 'Montserrat', sans-serif; color: var(--text-dark); margin-top: 4px; }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 40px; }
+
+        .panel {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+        }
+
+        .panel h3 { font-family: 'Montserrat', sans-serif; font-size: 1.2rem; margin-bottom: 20px; color: var(--green-dark); display: flex; justify-content: space-between; }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        th { background: #f8faf9; font-weight: 600; color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; }
+        tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background: #fdfdfd; }
+
+        .badge {
+            padding: 4px 10px; border-radius: 50px; font-size: 0.75rem; font-weight: 600;
+            background: rgba(39,174,96,0.1); color: var(--green-light);
+        }
+
+        @media (max-width: 1024px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); z-index: 1000; }
+            .main-content { margin-left: 0; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon">AA</div>
+            <div>
+                <strong style="display:block; font-family:'Montserrat', sans-serif; font-size:1.1rem">AASW Admin</strong>
+                <span style="font-size:0.75rem; color:rgba(255,255,255,0.6)">Control Panel</span>
+            </div>
+        </div>
+
+        <a href="#" class="nav-item active"><i class="fas fa-home"></i> Dashboard Output</a>
+        
+        <a href="/admin/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </aside>
+
+    <main class="main-content">
+        <div class="header">
+            <div>
+                <h1>Dashboard Overview</h1>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Welcome back to AASW Foundation admin panel.</p>
+            </div>
+            <button onclick="fetchStats()" style="padding:10px 20px; background:var(--green); color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600;"><i class="fas fa-sync-alt"></i> Refresh</button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-info">
+                    <p>Total Form Submissions</p>
+                    <h3 id="statContacts">-</h3>
+                </div>
+            </div>
+            <div class="stat-card gold">
+                <div class="stat-icon"><i class="fas fa-envelope-open-text"></i></div>
+                <div class="stat-info">
+                    <p>Newsletter Subscriptions</p>
+                    <h3 id="statSubscribers">-</h3>
+                </div>
+            </div>
+            <div class="stat-card blue">
+                <div class="stat-icon"><i class="fas fa-globe"></i></div>
+                <div class="stat-info">
+                    <p>Total Page Hits</p>
+                    <h3 id="statVisitors">-</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <!-- Recent Contacts -->
+            <div class="panel">
+                <h3>Recent Messages <span class="badge" id="contactBadge">0</span></h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Subject</th>
+                        </tr>
+                    </thead>
+                    <tbody id="contactTable">
+                        <tr><td colspan="3" style="text-align:center; color:#999">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Page Views -->
+            <div class="panel">
+                <h3>Top Page Views</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Page Path</th>
+                            <th style="text-align:right">Visits</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pageViewsTable">
+                        <tr><td colspan="2" style="text-align:center; color:#999">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h3>Recent Newsletter Signups <span class="badge" id="newsletterBadge">0</span></h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Email Address</th>
+                        <th>Subscribed At</th>
+                    </tr>
+                </thead>
+                <tbody id="newsletterTable">
+                    <tr><td colspan="2" style="text-align:center; color:#999">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        async function fetchStats() {
+            try {
+                const res = await fetch('/admin/api/stats');
+                
+                if (res.status === 401) {
+                    window.location.href = '/admin/login';
+                    return;
+                }
+
+                const json = await res.json();
+                if (!json.success) throw new Error("Failed to load");
+                
+                const data = json.data;
+
+                // Update Overview Cards
+                document.getElementById('statContacts').textContent = data.overview.totalContacts;
+                document.getElementById('statSubscribers').textContent = data.overview.totalSubscribers;
+                document.getElementById('statVisitors').textContent = data.overview.totalVisitors;
+
+                // Update Contacts Table
+                const contactTbody = document.getElementById('contactTable');
+                document.getElementById('contactBadge').textContent = data.recentContacts.length + " recent";
+                contactTbody.innerHTML = '';
+                if (data.recentContacts.length === 0) {
+                    contactTbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#999">No messages yet.</td></tr>';
+                } else {
+                    data.recentContacts.forEach(c => {
+                        contactTbody.innerHTML += `<tr>
+                            <td style="font-weight:600">${c.name}</td>
+                            <td><a href="mailto:${c.email}" style="color:var(--green)">${c.email}</a></td>
+                            <td>${c.subject}</td>
+                        </tr>`;
+                    });
+                }
+
+                // Update Subscribers Table
+                const subsTbody = document.getElementById('newsletterTable');
+                document.getElementById('newsletterBadge').textContent = data.recentSubscribers.length + " recent";
+                subsTbody.innerHTML = '';
+                if (data.recentSubscribers.length === 0) {
+                    subsTbody.innerHTML = '<tr><td colspan="2" style="text-align:center; color:#999">No subscribers yet.</td></tr>';
+                } else {
+                    data.recentSubscribers.forEach(s => {
+                        const date = new Date(s.subscribedAt).toLocaleDateString();
+                        subsTbody.innerHTML += `<tr>
+                            <td style="font-weight:500"><a href="mailto:${s.email}" style="color:var(--green)">${s.email}</a></td>
+                            <td style="color:var(--text-muted)">${date}</td>
+                        </tr>`;
+                    });
+                }
+
+                // Update Page Views Table
+                const pvTbody = document.getElementById('pageViewsTable');
+                pvTbody.innerHTML = '';
+                const pages = Object.entries(data.pageViews)
+                    .sort((a, b) => b[1] - a[1]) // Sort descending
+                    .slice(0, 5); // Take top 5
+                    
+                if (pages.length === 0) {
+                    pvTbody.innerHTML = '<tr><td colspan="2" style="text-align:center; color:#999">No tracking data.</td></tr>';
+                } else {
+                    pages.forEach(([path, views]) => {
+                        pvTbody.innerHTML += `<tr>
+                            <td style="font-family:monospace; color:var(--green-dark)">${path}</td>
+                            <td style="text-align:right; font-weight:600">${views}</td>
+                        </tr>`;
+                    });
+                }
+
+            } catch (error) {
+                console.error("Dashboard error:", error);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', fetchStats);
+    </script>
+</body>
+</html>

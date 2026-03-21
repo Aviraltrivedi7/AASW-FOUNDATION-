@@ -7,11 +7,13 @@ document.addEventListener('DOMContentLoaded', () => {
   initSlider();
   initNavbar();
   initMobileNav();
+  initDropdownTouch();
   initScrollReveal();
   initCounters();
   initLanguage();
   initNewsletter();
   initBackToTop();
+  initContactForm();
   initSmoothAnchors();
   initScrollProgress();
   initDynamicYear();
@@ -72,11 +74,20 @@ function initNavbar() {
   const brandBar = document.querySelector('.top-brand-bar');
   if (!nav) return;
 
+  let lastScroll = 0;
   let ticking = false;
+
   window.addEventListener('scroll', () => {
     if (!ticking) {
       requestAnimationFrame(() => {
-        // Just update scroll progress, nav stays sticky via CSS
+        const scrollY = window.scrollY;
+        // Add scrolled class for visual shrink/shadow
+        nav.classList.toggle('scrolled', scrollY > 60);
+        // Optionally hide brand bar on scroll down, show on scroll up
+        if (brandBar) {
+          brandBar.style.boxShadow = scrollY > 10 ? '0 2px 12px rgba(0,0,0,0.08)' : 'none';
+        }
+        lastScroll = scrollY;
         ticking = false;
       });
       ticking = true;
@@ -175,7 +186,7 @@ const translations = {
   'nav-programs': { en: 'Programs', hi: 'कार्यक्रम' },
   'nav-impact': { en: 'Impact Stories', hi: 'प्रभाव कहानियां' },
   'nav-contact': { en: 'Contact Us', hi: 'संपर्क करें' },
-  'nav-dashboard': { en: 'Dashboard', hi: 'डैशबोर्ड' },
+  'nav-dashboard': { en: 'ADMIN LOGIN', hi: 'एडमिन लॉगिन' },
 
   'hero-h1-1': { en: 'Transforming Lives Through', hi: 'जीवन को बदलना' },
   'hero-h1-2': { en: 'Education, Health & Hope', hi: 'शिक्षा, स्वास्थ्य और आशा के जरिए' },
@@ -289,6 +300,21 @@ const translations = {
   'tm1-name': { en: 'SATYA PRAKASH TRIVEDI', hi: 'सत्य प्रकाश त्रिवेदी' },
   'tm1-role': { en: 'Founder & President', hi: 'संस्थापक और अध्यक्ष' },
   'tm1-desc': { en: 'Visionary leader with 20+ years in community development and social welfare across rural India.', hi: '20+ वर्षों के अनुभव के साथ ग्रामीण भारत में सामुदायिक विकास और सामाजिक कल्याण में दूरदर्शी नेता।' },
+  // Contact form
+  'contact-tag': { en: 'Get In Touch', hi: 'संपर्क करें' },
+  'contact-h2': { en: 'Contact Us', hi: 'हमसे संपर्क करें' },
+  'contact-sub': { en: 'Have a question or want to collaborate? We\'d love to hear from you.', hi: 'कोई प्रश्न है या सहयोग करना चाहते हैं? हमें आपसे सुनना अच्छा लगेगा।' },
+  'contact-name-label': { en: 'Your Name', hi: 'आपका नाम' },
+  'contact-email-label': { en: 'Email Address', hi: 'ईमेल पता' },
+  'contact-subject-label': { en: 'Subject', hi: 'विषय' },
+  'contact-message-label': { en: 'Message', hi: 'संदेश' },
+  'contact-send': { en: 'Send Message', hi: 'संदेश भेजें' },
+  'contact-info-email-h': { en: 'Email Us', hi: 'ईमेल करें' },
+  'contact-info-phone-h': { en: 'Call Us', hi: 'फ़ोन करें' },
+  'contact-info-addr-h': { en: 'Visit Us', hi: 'हमसे मिलें' },
+  'contact-info-addr': { en: 'Ward No 2 Ambedkar Nagar Rura Kanpur Dehat Uttar Pradesh', hi: 'वार्ड नं 2 अंबेडकर नगर रुरा कानपुर देहात उत्तर प्रदेश' },
+  'contact-info-hours-h': { en: 'Office Hours', hi: 'कार्यालय समय' },
+  'contact-info-hours': { en: 'Mon – Sat: 9:30 AM – 6:00 PM', hi: 'सोम – शनि: 9:30 AM – 6:00 PM' },
 };
 
 function initLanguage() {
@@ -322,24 +348,59 @@ window.setLang = setLang;
 
 /* ═══ NEWSLETTER ═══ */
 function initNewsletter() {
-  document.getElementById('nlBtn')?.addEventListener('click', () => {
+  document.getElementById('nlBtn')?.addEventListener('click', async () => {
     const input = document.getElementById('nlInput');
     const btn = document.getElementById('nlBtn');
-    if (!input.value || !input.value.includes('@')) {
+    const email = input?.value?.trim();
+
+    if (!email || !email.includes('@')) {
       input.style.outline = '2px solid #ff4444';
       input.style.outlineOffset = '2px';
       setTimeout(() => { input.style.outline = ''; }, 2000);
       return;
     }
-    input.value = '';
+
+    // Disable button while sending
+    btn.disabled = true;
     const lang = document.body.classList.contains('lang-hi') ? 'hi' : 'en';
-    btn.textContent = lang === 'hi' ? '✓ धन्यवाद!' : '✓ Thank you!';
-    btn.style.background = '#059669';
-    btn.style.color = '#fff';
+    btn.textContent = lang === 'hi' ? '⏳ भेज रहे हैं...' : '⏳ Sending...';
+
+    try {
+      const res = await fetch('/api/v1/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+
+      const data = await res.json();
+
+    if (res.ok && res.status !== 409) {
+        input.value = '';
+        btn.textContent = lang === 'hi' ? '✓ धन्यवाद!' : '✓ Thank you!';
+        btn.style.background = '#059669';
+        btn.style.color = '#fff';
+      } else if (res.status === 409) {
+        // Already subscribed — informational, not an error
+        btn.textContent = lang === 'hi' ? 'ℹ पहले से सदस्य' : 'ℹ Already subscribed';
+        btn.style.background = '#f59e0b';
+        btn.style.color = '#fff';
+      } else {
+        btn.textContent = lang === 'hi' ? '✗ त्रुटि!' : '✗ Error!';
+        btn.style.background = '#ef4444';
+        btn.style.color = '#fff';
+      }
+    } catch (err) {
+      console.error('Newsletter subscription failed:', err);
+      btn.textContent = lang === 'hi' ? '✗ त्रुटि!' : '✗ Error!';
+      btn.style.background = '#ef4444';
+      btn.style.color = '#fff';
+    }
+
     setTimeout(() => {
       btn.textContent = lang === 'hi' ? 'सदस्यता लें' : 'SUBSCRIBE';
       btn.style.background = '';
       btn.style.color = '';
+      btn.disabled = false;
     }, 3000);
   });
 }
@@ -396,4 +457,114 @@ function initDynamicYear() {
       ? `© ${year} AASW फाउंडेशन। सर्वाधिकार सुरक्षित। | पंजीकृत गैर-लाभकारी · 80G और 12A प्रमाणित`
       : `© ${year} AASW Foundation. All rights reserved. | Registered Non-Profit · 80G & 12A Certified`;
   }
+}
+
+/* ═══ CONTACT FORM ═══ */
+function initContactForm() {
+  const form = document.getElementById('contactForm');
+  const btn = document.getElementById('contactSubmitBtn');
+  const feedback = document.getElementById('contactFeedback');
+  if (!form || !btn) return;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const lang = document.body.classList.contains('lang-hi') ? 'hi' : 'en';
+
+    const name = document.getElementById('contactName')?.value?.trim();
+    const email = document.getElementById('contactEmail')?.value?.trim();
+    const subject = document.getElementById('contactSubject')?.value?.trim();
+    const message = document.getElementById('contactMessage')?.value?.trim();
+
+    // Client-side validation
+    if (!name || name.length < 2) {
+      showFeedback(feedback, lang === 'hi' ? 'कृपया अपना नाम दर्ज करें (कम से कम 2 अक्षर)' : 'Please enter your name (at least 2 characters)', 'error');
+      return;
+    }
+    if (!email || !email.includes('@')) {
+      showFeedback(feedback, lang === 'hi' ? 'कृपया एक मान्य ईमेल दर्ज करें' : 'Please enter a valid email address', 'error');
+      return;
+    }
+    if (!subject || subject.length < 3) {
+      showFeedback(feedback, lang === 'hi' ? 'कृपया विषय दर्ज करें (कम से कम 3 अक्षर)' : 'Please enter a subject (at least 3 characters)', 'error');
+      return;
+    }
+    if (!message || message.length < 10) {
+      showFeedback(feedback, lang === 'hi' ? 'कृपया संदेश दर्ज करें (कम से कम 10 अक्षर)' : 'Please enter a message (at least 10 characters)', 'error');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = lang === 'hi' ? '<i class="fas fa-spinner fa-spin"></i> भेज रहे हैं...' : '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+    try {
+      const res = await fetch('/api/v1/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          email,
+          subject,
+          message,
+          website: document.getElementById('contactWebsite')?.value || ''
+        })
+      });
+
+      const data = await res.json();
+
+      if (res.status === 201) {
+        form.reset();
+        showFeedback(feedback, lang === 'hi' ? '✓ आपका संदेश सफलतापूर्वक भेजा गया!' : '✓ Your message has been sent successfully!', 'success');
+      } else {
+        const errMsg = data.message || (lang === 'hi' ? 'कुछ गलत हो गया' : 'Something went wrong');
+        showFeedback(feedback, '✗ ' + errMsg, 'error');
+      }
+    } catch (err) {
+      console.error('Contact form submission failed:', err);
+      showFeedback(feedback, lang === 'hi' ? '✗ नेटवर्क त्रुटि, कृपया पुनः प्रयास करें' : '✗ Network error, please try again', 'error');
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = lang === 'hi' ? '<i class="fas fa-paper-plane"></i> संदेश भेजें' : '<i class="fas fa-paper-plane"></i> Send Message';
+  });
+}
+
+function showFeedback(el, msg, type) {
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'contact-feedback ' + type;
+  el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 5000);
+}
+
+/* ═══ DROPDOWN TOUCH SUPPORT ═══ */
+function initDropdownTouch() {
+  // On touch devices, toggle dropdown open/close on tap
+  const dropdowns = document.querySelectorAll('.has-dropdown');
+  if (!dropdowns.length) return;
+
+  dropdowns.forEach(dd => {
+    const link = dd.querySelector('.nav-link');
+    if (!link) return;
+
+    link.addEventListener('click', (e) => {
+      // Only intercept on touch devices / narrow screens
+      if (window.innerWidth > 768) return;
+      e.preventDefault();
+      e.stopPropagation();
+
+      // Close other open dropdowns
+      dropdowns.forEach(other => {
+        if (other !== dd) other.classList.remove('open');
+      });
+
+      dd.classList.toggle('open');
+    });
+  });
+
+  // Close dropdowns when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.has-dropdown')) {
+      dropdowns.forEach(dd => dd.classList.remove('open'));
+    }
+  });
 }

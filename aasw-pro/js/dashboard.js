@@ -84,55 +84,141 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Donation Chart (Line/Area)
-    const ctxDonation = document.getElementById('donationChart');
-    if (ctxDonation) {
-        // Create gradient for area chart
-        const gradientBlue = ctxDonation.getContext('2d').createLinearGradient(0, 0, 0, 400);
-        gradientBlue.addColorStop(0, 'rgba(59, 130, 246, 0.5)');
-        gradientBlue.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+    // --- 3. Tab Switching Logic ---
+    const navLinks = document.querySelectorAll('.sidebar .nav-link');
+    const viewSections = document.querySelectorAll('.view-section');
 
-        new Chart(ctxDonation, {
-            type: 'line',
-            data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
-                datasets: [{
-                    label: 'Donations (₹)',
-                    data: [120000, 150000, 110000, 180000, 210000, 190000, 240000, 280000, 260000, 310000],
-                    borderColor: '#3b82f6',
-                    backgroundColor: gradientBlue,
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4, // Smooth curves
-                    pointBackgroundColor: '#0f111a',
-                    pointBorderColor: '#3b82f6',
-                    pointBorderWidth: 2,
-                    pointRadius: 4,
-                    pointHoverRadius: 6
-                }]
-            },
-            options: {
-                ...commonOptions,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: 'rgba(15, 17, 26, 0.9)',
-                        titleFont: { size: 14, family: "'Outfit', sans-serif" },
-                        bodyFont: { size: 14, family: "'Outfit', sans-serif" },
-                        padding: 12,
-                        borderColor: 'rgba(255,255,255,0.1)',
-                        borderWidth: 1,
-                        displayColors: false,
-                        callbacks: {
-                            label: function(context) {
-                                return '₹ ' + context.parsed.y.toLocaleString('en-IN');
-                            }
-                        }
-                    }
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            const targetId = link.getAttribute('data-target');
+            if (!targetId || targetId === 'logout') return;
+            
+            e.preventDefault();
+            
+            // Update active nav state
+            navLinks.forEach(l => l.parentElement.classList.remove('active'));
+            link.parentElement.classList.add('active');
+            
+            // Show target view, hide others
+            viewSections.forEach(view => {
+                if (view.id === 'view-' + targetId) {
+                    view.style.display = 'block';
+                    // small animation effect
+                    view.style.opacity = '0';
+                    view.style.animation = 'fadeIn 0.4s ease forwards';
+                } else {
+                    view.style.display = 'none';
+                    view.style.animation = 'none';
                 }
+            });
+            
+            // on mobile, close sidebar after clicking a nav item
+            if(window.innerWidth <= 768 && sidebar.classList.contains('active')) {
+                toggleSidebar();
             }
         });
-    }
+    });
+
+    // --- 4. Fetch Dashboard Stats ---
+    const fetchDashboardStats = async () => {
+        try {
+            const res = await fetch('/admin/api/stats');
+            const result = await res.json();
+            
+            if (result.success && result.data) {
+                const data = result.data;
+                
+                // Update KPI Cards
+                document.getElementById('valVisitors').textContent = (data.overview.totalVisitors || 0).toLocaleString('en-IN');
+                document.getElementById('valMessages').textContent = (data.overview.totalContacts || 0).toLocaleString('en-IN');
+                document.getElementById('valSubscribers').textContent = (data.overview.totalSubscribers || 0).toLocaleString('en-IN');
+                
+                // --- Helper function for dates ---
+                const renderDate = (dstr) => {
+                    const d = new Date(dstr);
+                    return d.toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' });
+                };
+
+                // Provide a safe escape function
+                const escapeHtml = (unsafe) => {
+                    return (unsafe || '').toString()
+                        .replace(/&/g, "&amp;")
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;")
+                        .replace(/"/g, "&quot;")
+                        .replace(/'/g, "&#039;");
+                };
+
+                // --- Update Recent Messages Table (Overview Tab) ---
+                const recentTbody = document.getElementById('recentMessagesTbody');
+                if (data.recentContacts && data.recentContacts.length > 0) {
+                    recentTbody.innerHTML = '';
+                    data.recentContacts.forEach(msg => {
+                        const tr = document.createElement('tr');
+                        let initials = (msg.name || 'U').substring(0, 2).toUpperCase();
+                        tr.innerHTML = `
+                            <td>
+                                <div class="table-user">
+                                    <div class="tu-avatar">${escapeHtml(initials)}</div>
+                                    <span>${escapeHtml(msg.name)}</span>
+                                </div>
+                            </td>
+                            <td>${escapeHtml(msg.email)}</td>
+                            <td>${escapeHtml(msg.subject)}</td>
+                            <td>${renderDate(msg.date)}</td>
+                        `;
+                        recentTbody.appendChild(tr);
+                    });
+                } else {
+                    recentTbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 2rem;">No recent messages found</td></tr>';
+                }
+                
+                // --- Update FULL Messages Table (Messages Tab) ---
+                const allMsgsTbody = document.getElementById('allMessagesTbody');
+                if (data.allContacts && data.allContacts.length > 0) {
+                    allMsgsTbody.innerHTML = '';
+                    data.allContacts.forEach(msg => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td><strong>${escapeHtml(msg.name)}</strong></td>
+                            <td>${escapeHtml(msg.email)}</td>
+                            <td>${escapeHtml(msg.subject)}</td>
+                            <td><div style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(msg.message)}">${escapeHtml(msg.message)}</div></td>
+                            <td>${renderDate(msg.date)}</td>
+                        `;
+                        allMsgsTbody.appendChild(tr);
+                    });
+                } else {
+                    allMsgsTbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 2rem;">No messages available</td></tr>';
+                }
+
+                // --- Update FULL Users Table (Users Tab) ---
+                const allUsersTbody = document.getElementById('allUsersTbody');
+                if (data.allSubscribers && data.allSubscribers.length > 0) {
+                    allUsersTbody.innerHTML = '';
+                    data.allSubscribers.forEach(sub => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td><strong>${escapeHtml(sub.email)}</strong></td>
+                            <td>${renderDate(sub.date)}</td>
+                        `;
+                        allUsersTbody.appendChild(tr);
+                    });
+                } else {
+                    allUsersTbody.innerHTML = '<tr><td colspan="2" style="text-align:center; padding: 2rem;">No subscribers available</td></tr>';
+                }
+                
+            }
+        } catch (err) {
+            console.error("Failed to fetch dashboard stats", err);
+            const errHtml = '<tr><td colspan="5" style="text-align:center; padding: 2rem; color: #ef4444;">Failed to load data</td></tr>';
+            document.getElementById('recentMessagesTbody').innerHTML = errHtml;
+            document.getElementById('allMessagesTbody').innerHTML = errHtml;
+            document.getElementById('allUsersTbody').innerHTML = errHtml;
+        }
+    };
+    
+    fetchDashboardStats();
 
     // Region Impact Chart (Doughnut)
     const ctxRegion = document.getElementById('regionChart');

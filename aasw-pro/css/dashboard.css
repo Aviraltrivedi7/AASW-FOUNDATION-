@@ -28,7 +28,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Inter', sans-serif;
 }
 
 body {
@@ -105,6 +105,7 @@ body {
     letter-spacing: 0.05em;
     background: linear-gradient(to right, #fff, #a5b4fc);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -339,6 +340,7 @@ body {
     margin-bottom: 4px;
     background: linear-gradient(to right, #fff, #94a3b8);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -629,7 +631,8 @@ body {
     }
     
     .search-box {
-        display: none; /* hide search on small screens */
+        width: 100%;
+        max-width: 200px;
     }
     
     .content-wrapper {
